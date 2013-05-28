@@ -5,7 +5,7 @@ import os
 import shlex
 
 '''
-seven_zip module. handles interaction with 7zip, 7pzip.
+seven_zip module. handles interaction with 7zip, p7zip.
 Only supports snooping in archives and unpacking
 
 you'll need the 7zip binary in the path. get theese from here:
@@ -131,13 +131,15 @@ class SevenZipMember(object):
     """
     SevenZipMember
     This Class is used for so called "Members". A Member is a file in an archive
-    You can create Members with SevenZip.getmember("name") or yield all members:
-    >>> for i in seven_zip_object.getmembers:
-    >>>    print i.path, i.method
+    You can create Members with ``SevenZip.getmember("name")`` or yield all members::
 
-    Or you can yield all members matching a specific name:
-    >>> for i in seven_zip_object.searchmembers("*.c"):
-    >>>     i.extract("~/code/")
+        >>> for i in seven_zip_object.getmembers:
+        >>>    print i.path, i.method
+
+    Or you can yield all members matching a specific name::
+
+        >>> for i in seven_zip_object.searchmembers("*.c"):
+        >>>     i.extract("~/code/")
 
     """
     def __init__(self, path_to_archive, file_dict):
@@ -155,14 +157,15 @@ class SevenZipMember(object):
             raise ReadError
 
     def get_info(self):
-        '''return dict with info's about member. dict is taken from SevenZip'''
+        '''return dict with info's about member. dict is taken from ``SevenZip``'''
         return self._file_dict
 
     def isarchive(self):
         #TODO implement some useful determination if member itselv is an archive
         pass
     def has_archive_filename(self):
-        '''is the member extracktable, based on a stupid guess of the filename'''
+        '''is the member extracktable?
+        Based on a stupid guess of the filename...'''
         archive_filenames = ["*.tar", "Payload*", "*.ar", "*.7z", "*.bz", "*.gz",
         "*.cpio", "*.pkg", "*.mpkg", "*.rpm", "*.deb", "*.hfs",]
 
@@ -177,7 +180,8 @@ class SevenZipMember(object):
         return stringy
 
     def extract(self, extractpath):
-        '''Extract the member to extractpath. returns the path to the new file'''
+        '''Extract the file of the member to ``extractpath``.
+        returns the path to the new file'''
         executable = SevenZipExecutable()
         executable.run_command(path_to_archive=self.path_to_archive,
                                command='x', options='-ir!'+self.path,
@@ -187,17 +191,24 @@ class SevenZipMember(object):
 
 
 class SevenZip(object):
-    '''SevenZip class. create a object like this:
-    >>> zipfile = seven_zip.SevenZip("file.zip")
-    then you can do fancy stuff like
-    >>> zipfile.getnames()
-    to print all files in the archive. or extract it:
-    >>> zipfile.extractall("~/")
+    '''SevenZip class. create a object like this::
 
-    or more advanced: extract only jpg's bigger than 1MB to a special folder
-    >>> for member in zipfile.searchmember("*.jpg")
-    >>>    if member.size > (1024**2):
-    >>>        member.extract("/tmp/bigpictures")
+        >>> zipfile = seven_zip.SevenZip("file.zip")
+    
+    then you can do fancy stuff like::
+
+        >>> zipfile.getnames()
+    
+    to print all files in the archive. or extract it::
+
+        >>> zipfile.extractall("~/")
+
+    or more advanced: extract only jpg's bigger than 1MB to a special folder::
+
+        >>> for member in zipfile.searchmember("*.jpg")
+        >>>    if member.size > (1024**2):
+        >>>        member.extract("/tmp/bigpictures")
+
     '''
 
     members = []
@@ -247,12 +258,13 @@ class SevenZip(object):
         return names
 
     def getmembers(self):
-        '''yield SevenZipMembers'''
+        '''yield ``SevenZipMembers`` for all Files in the Archive'''
         for i in self.members:
             yield SevenZipMember(self.path, i)
 
     def getmember(self, path_in_archive):
-        '''return one member of the archive'''
+        '''return the ``SevenZipMember`` for the ``path_in_archive``
+        if there's no File like ``path_in_archive`` return False'''
         for d in self.members:
             if d['Path'] == path_in_archive:
                 return SevenZipMember(self.path, d)
@@ -275,7 +287,7 @@ class SevenZip(object):
 
     def extract_all(self, path):
         '''extract all files to path.
-        this will overwrite files, create directorys etc. you have been warned!
+        this will overwrite files, create directorys etc. **you have been warned!**
         returns the paths to the extracted files (as a list)'''
         self.executable.run_command(path_to_archive=self.archive_path,
                         command="x", options='', path_to_extract=path)
