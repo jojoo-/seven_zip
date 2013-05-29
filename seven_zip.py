@@ -125,6 +125,9 @@ class SevenZipExecutable(object):
                 raise NotEnoughMemoryError
             elif e.returncode == 255:
                 raise UserStoppageError
+            elif e.returncode == 1:
+                #this os only a warning from 7z
+                pass
 
 
 class SevenZipMember(object):
