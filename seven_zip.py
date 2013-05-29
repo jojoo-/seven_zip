@@ -160,7 +160,8 @@ class SevenZipMember(object):
             self.method = file_dict['Method']
             self.mode = file_dict['Mode']
         except KeyError:
-            raise ReadError
+            pass
+            #raise ReadError. FIXME: Debug this for dmg->pkg
 
     def get_info(self):
         '''return dict with info's about member. dict is taken from :py:class:`SevenZip`'''
@@ -338,8 +339,8 @@ class SevenZip(object):
             inner_plf = plf.extract("Payload~", path)
             innerPayloadFile = SevenZip(inner_plf)
             files = innerPayloadFile.extract_all(path)
-            os.remove(payload_filename)
-            os.remove(inner_plf)
+            #os.remove(payload_filename)
+            #os.remove(inner_plf)
             for j in files:
                 ret.append(j)
         return ret
@@ -363,15 +364,21 @@ class SevenZip(object):
     def extract_super_smart(self, path):
         '''extracts files out of pkg's in dmg's '''
         if fnmatch.fnmatch(self.archive_path, "*.dmg"):
-            if self.getmember('2.hfs'):
-                ret = []
-                for file_in_dmg in self._extract_dmg(path):
-                    if fnmatch.fnmatch(file_in_dmg, "*.pkg"):
-                        print file_in_dmg
-                        pkgs = SevenZip(file_in_dmg)
-                        files = pkgs._extract_pkg(path)
-                        ret.append(files)
-                return ret
+            #print "i'm a dmg"
+            foo = self.getnames()
+            for fname in foo:
+
+                if fnmatch.fnmatch(fname, "2.hfs"):
+                    #print "there is a 2.hfs"
+                    ret = []
+                    for file_in_dmg in self._extract_dmg(path):
+                        #print "i am in the file in dmg"
+                        if fnmatch.fnmatch(file_in_dmg, "*.pkg"):
+                            #print file_in_dmg
+                            pkgs = SevenZip(file_in_dmg)
+                            files = pkgs._extract_pkg(path)
+                            ret.append(files)
+                    return ret
         else:
             print "super_smart is for dmg's only"
             return False
