@@ -250,7 +250,7 @@ class SevenZip(object):
         return "<SevenZip Object: {}>".format(self.path)
 
     def getnames(self):
-        '''get  names from an archive.
+        '''get the names from an archive.
         returns the names of the files in the archive.'''
         names = []
         for file_dict in self.members:
