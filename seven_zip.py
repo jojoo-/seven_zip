@@ -91,10 +91,10 @@ class SevenZipExecutable(object):
 
     def run_command(self, path_to_archive='', command='', options='', path_to_extract=''):
         if path_to_extract == '':
-            commandline = "{} {} {} {} -y".format(self.command, command,
+            commandline = "{} {} '{}' {} -y".format(self.command, command,
                       path_to_archive, options)
         else:
-            commandline = "{} {} {} -o{} {} -y".format(self.command, command,
+            commandline = "{} {} '{}' -o'{}' {} -y".format(self.command, command,
                       path_to_archive, path_to_extract, options)
         try:
             #output = subprocess.check_output([self.command, command, path_to_archive, "-o" + path_to_extract, options, '-y'])

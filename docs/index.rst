@@ -13,10 +13,12 @@ you'll need the 7zip binary in the path. get theese from here:
 
  - windows: http://www.7-zip.org/
  - unix: http://p7zip.sourceforge.net/
+ please consider a donation to Igor Wiktorowitsch Pawlow, paypal@7-zip.org
 
+Get seven_zip from github: https://github.com/jojoo-/seven_zip/
 (c) jonas osswald 2013, licensed as lgpl.
 
-please consider a donation to Igor Wiktorowitsch Pawlow, paypal@7-zip.org
+
 
 Demo!
 =====
