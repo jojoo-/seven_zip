@@ -34,7 +34,7 @@ to print all files in the archive. or extract it::
 
 or more advanced: extract only jpg's bigger than 1MB to a special folder::
 
-    >>> for member in zipfile.searchmember("*.jpg")
+    >>> for member in zipfile.searchmember("*.jpg"):
     >>>    if member.size > (1024**2):
     >>>        member.extract("/tmp/bigpictures")
 
@@ -42,6 +42,7 @@ Contents:
 =========
 .. toctree::
 	seven_zip_rst
+	faq
 	:maxdepth: 2
 
 

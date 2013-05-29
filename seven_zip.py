@@ -129,7 +129,8 @@ class SevenZipExecutable(object):
 
 class SevenZipMember(object):
     """
-    SevenZipMember
+    .. class:: SevenZipMember
+
     This Class is used for so called "Members". A Member is a file in an archive
     You can create Members with ``SevenZip.getmember("name")`` or yield all members::
 
@@ -143,21 +144,26 @@ class SevenZipMember(object):
 
     """
     def __init__(self, path_to_archive, file_dict):
-        '''SevenZipMember'''
+        '''SevenZipMember foo'''
         self._file_dict = file_dict
         self.path_to_archive = path_to_archive
         try:
+            #: Path to the whole Archive
             self.path_to_archive = path_to_archive
+
+            #: Path of the Member in the File
             self.path = file_dict['Path']  # This is the Name of the member
             self.name = file_dict['Path']
-            self.size = file_dict['Size']
+
+            #: Size in bytes
+            self.size = int(file_dict['Size'])
             self.method = file_dict['Method']
             self.mode = file_dict['Mode']
         except KeyError:
             raise ReadError
 
     def get_info(self):
-        '''return dict with info's about member. dict is taken from ``SevenZip``'''
+        '''return dict with info's about member. dict is taken from :py:class:`SevenZip`'''
         return self._file_dict
 
     def isarchive(self):
@@ -180,8 +186,13 @@ class SevenZipMember(object):
         return stringy
 
     def extract(self, extractpath):
-        '''Extract the file of the member to ``extractpath``.
-        returns the path to the new file'''
+        '''
+        Extract the file of the member.
+
+        :param extractpath: Extract the files There
+        :rtype: Path to extracted File as string
+
+        '''
         executable = SevenZipExecutable()
         executable.run_command(path_to_archive=self.path_to_archive,
                                command='x', options='-ir!'+self.path,
@@ -205,7 +216,7 @@ class SevenZip(object):
 
     or more advanced: extract only jpg's bigger than 1MB to a special folder::
 
-        >>> for member in zipfile.searchmember("*.jpg")
+        >>> for member in zipfile.searchmember("*.jpg"):
         >>>    if member.size > (1024**2):
         >>>        member.extract("/tmp/bigpictures")
 
@@ -227,6 +238,7 @@ class SevenZip(object):
     def __init__(self, name):
         '''open a compressed file that 7zip can read'''
         self.path = name  # dont use this
+        #: Path to the archive
         self.archive_path = name  # use this
         self.executable = SevenZipExecutable()
 
@@ -236,7 +248,9 @@ class SevenZip(object):
         end = sz_out.find('\n\n', begin)
         archinfo = self._parse_list(sz_out[begin:end])
         try:
+            #: Type of the archive, e.g. zip
             self.archive_type = archinfo['Type']
+            #: Method of the Archive (e.g. )
             self.method = archinfo['Method']
             self.blocks = archinfo['Blocks']
         except KeyError:
@@ -258,13 +272,19 @@ class SevenZip(object):
         return names
 
     def getmembers(self):
-        '''yield ``SevenZipMembers`` for all Files in the Archive'''
+        '''yield :py:class:`SevenZipMember` for all Files in the Archive'''
         for i in self.members:
             yield SevenZipMember(self.path, i)
 
     def getmember(self, path_in_archive):
-        '''return the ``SevenZipMember`` for the ``path_in_archive``
-        if there's no File like ``path_in_archive`` return False'''
+        '''
+        return the :py:class:`SevenZipMember` for the ``path_in_archive``.
+        If there's no File like ``path_in_archive`` return False
+
+        :param path_in_archive: The Name/Path of the new Member
+        :rtype: :py:class:`SevenZipMember`
+
+        ''' 
         for d in self.members:
             if d['Path'] == path_in_archive:
                 return SevenZipMember(self.path, d)
@@ -272,14 +292,19 @@ class SevenZip(object):
             return False
 
     def searchmember(self, path_in_archive):
-        '''yield all member(s) wildcard matching to the specified path'''
+        '''yield all :py:class:`SevenZipMember`(s) wildcard matching to the specified path'''
         for d in self.members:
             if fnmatch.fnmatch(d['Path'], path_in_archive):
                 yield SevenZipMember(self.path, d)
 
     def extract(self, name, path_to_extr):
         '''extract the file name to the path
-        returns the path to the extracted file'''
+
+:param name: The name of the File to be extractet out of the archive
+:param path_to_extr: The Path where the File should be written to
+:rtype: Path to extracted file as string
+
+        '''
         output = self.executable.run_command(path_to_archive=self.path,
                                              command="x", options="-ir!"+name,
                                              path_to_extract=path_to_extr)
